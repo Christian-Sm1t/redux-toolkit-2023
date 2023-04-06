@@ -1,11 +1,13 @@
 import { createSlice, nanoid, type PayloadAction } from '@reduxjs/toolkit'
 import { type RootState } from '../store'
+import { sub } from 'date-fns'
 
 export interface IPostsState {
   id: string
   title: string
   userId?: string
   content: string
+  date: string
 }
 
 export interface IReactions {
@@ -21,6 +23,7 @@ const initialState: Array<IPostsState & { reactions: IReactions }> = [
     id: '1',
     title: 'About Redux Toolkit in 2023',
     content: 'How about getting to know the ways of using Redux in 2023',
+    date: sub(new Date(), { minutes: 10 }).toISOString(),
     reactions: {
       thumbsUp: 0,
       wow: 0,
@@ -33,6 +36,7 @@ const initialState: Array<IPostsState & { reactions: IReactions }> = [
     id: '2',
     title: 'About Redux Toolkit in 2023 extended',
     content: 'How about getting to know the ins and outs of Redux in 2023',
+    date: sub(new Date(), { minutes: 5 }).toISOString(),
     reactions: {
       thumbsUp: 0,
       wow: 0,
@@ -57,6 +61,7 @@ const postsSlice = createSlice({
             id: nanoid(),
             title,
             content,
+            date: new Date().toISOString(),
             userId,
             reactions: {
               thumbsUp: 0,
