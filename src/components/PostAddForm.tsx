@@ -5,7 +5,7 @@ import { selectAllUsers } from '../redux/slices/usersSlice'
 
 function PostAddForm() {
   const [title, setTitle] = useState<string>('')
-  const [content, setContent] = useState<string>('')
+  const [body, setBody] = useState<string>('')
   const [userId, setUserId] = useState<string>('')
 
   const dispatch = useAppDispatch()
@@ -16,7 +16,7 @@ function PostAddForm() {
   }
 
   const onContentChanged = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setContent(e.target.value)
+    setBody(e.target.value)
   }
 
   const onAuthorChanged = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -24,13 +24,13 @@ function PostAddForm() {
   }
 
   const onSavePostClicked = () => {
-    if (title.length > 0 && content.length > 0) {
-      dispatch(addPost(title, content, userId))
+    if (title.length > 0 && body.length > 0) {
+      dispatch(addPost(title, body, userId))
       setTitle('')
-      setContent('')
+      setBody('')
     }
   }
-  const canSave = Boolean(title) && Boolean(content) && Boolean(userId)
+  const canSave = Boolean(title) && Boolean(body) && Boolean(userId)
 
   const userOptions = users.map((user) => (
     <option key={user.id} value={user.id}>
@@ -50,7 +50,7 @@ function PostAddForm() {
           {userOptions}
         </select>
         <label htmlFor="postContent">Content:</label>
-        <textarea id="postContent" name="postContent" value={content} onChange={onContentChanged} />
+        <textarea id="postContent" name="postContent" value={body} onChange={onContentChanged} />
         <button type="button" onClick={onSavePostClicked} disabled={!canSave}>
           Save Post
         </button>

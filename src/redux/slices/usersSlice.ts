@@ -1,10 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { type RootState } from '../store'
-
-interface IUserState {
-  id: string
-  name: string
-}
+import { type IUserState } from '../../types/user.types'
 
 const initialState: IUserState[] = [
   { id: '0', name: 'Dude Lebowki' },
