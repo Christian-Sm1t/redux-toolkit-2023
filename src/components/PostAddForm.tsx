@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
-import { addPost } from '../redux/slices/postsSlice'
+import { addNewPost } from '../redux/slices/postsSlice'
 import { selectAllUsers } from '../redux/slices/usersSlice'
 
 function PostAddForm() {
   const [title, setTitle] = useState<string>('')
   const [body, setBody] = useState<string>('')
   const [userId, setUserId] = useState<string>('')
+  const [addRequestStatus, setAddRequestStatus] = useState('idle')
 
   const dispatch = useAppDispatch()
   const users = useAppSelector(selectAllUsers)
@@ -24,13 +25,22 @@ function PostAddForm() {
   }
 
   const onSavePostClicked = () => {
-    if (title.length > 0 && body.length > 0) {
-      dispatch(addPost(title, body, userId))
-      setTitle('')
-      setBody('')
+    if (canSave) {
+      try {
+        setAddRequestStatus('pending')
+        void dispatch(addNewPost({ title, body, userId })).unwrap()
+
+        setTitle('')
+        setBody('')
+        setUserId('')
+      } catch (err) {
+        console.error(err)
+      } finally {
+        setAddRequestStatus('idle')
+      }
     }
   }
-  const canSave = Boolean(title) && Boolean(body) && Boolean(userId)
+  const canSave = Boolean(title) && Boolean(body) && Boolean(userId) && addRequestStatus === 'idle'
 
   const userOptions = users.map((user) => (
     <option key={user.id} value={user.id}>

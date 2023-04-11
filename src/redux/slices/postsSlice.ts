@@ -1,4 +1,4 @@
-import { createSlice, nanoid, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, nanoid, createAsyncThunk, type PayloadAction, bindActionCreators } from '@reduxjs/toolkit'
 import axios from 'axios'
 import { type RootState } from '../store'
 import { type IPostsStatePost, type IPostsState, type IReactions } from '../../types/post.types'
@@ -9,12 +9,17 @@ const POSTS_URL = 'https://jsonplaceholder.typicode.com/posts'
 const initialState: IPostsState = {
   posts: [],
   status: 'idle',
-  error: null,
+  error: null
 }
 
 export const fetchPosts = createAsyncThunk('posts/fetchPosts', async (controller: AbortController) => {
   const response = await axios.get(POSTS_URL, { signal: controller.signal })
   console.log(response)
+  return response.data
+})
+
+export const addNewPost = createAsyncThunk('posts/addNewPost', async (newPost: { title: string; body: string; userId: string }) => {
+  const response = await axios.post(POSTS_URL, newPost)
   return response.data
 })
 
@@ -39,11 +44,11 @@ const postsSlice = createSlice({
               wow: 0,
               heart: 0,
               rocket: 0,
-              coffee: 0,
-            },
-          },
+              coffee: 0
+            }
+          }
         }
-      },
+      }
     },
     reactionAdded(state: IPostsState, action: PayloadAction<{ postId: string; reaction: keyof IReactions }>) {
       const { postId, reaction } = action.payload
@@ -56,7 +61,7 @@ const postsSlice = createSlice({
       state.posts = []
       state.status = 'idle'
       state.error = null
-    },
+    }
   },
   extraReducers(builder) {
     builder
@@ -74,7 +79,7 @@ const postsSlice = createSlice({
             wow: 0,
             heart: 0,
             rocket: 0,
-            coffee: 0,
+            coffee: 0
           }
           return post
         })
@@ -84,7 +89,19 @@ const postsSlice = createSlice({
         state.status = 'failed'
         state.error = action.error.message
       })
-  },
+      .addCase(addNewPost.fulfilled, (state, action) => {
+        action.payload.date = new Date().toISOString()
+        action.payload.reactions = {
+          thumbsUp: 0,
+          wow: 0,
+          heart: 0,
+          rocket: 0,
+          coffee: 0
+        }
+        console.log(action.payload)
+        state.posts.push(action.payload)
+      })
+  }
 })
 
 export const selectAllPosts = (state: RootState) => state.posts.posts
