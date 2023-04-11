@@ -1,8 +1,9 @@
-import { createSlice, nanoid, createAsyncThunk, type PayloadAction, bindActionCreators } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit'
 import axios from 'axios'
 import { type RootState } from '../store'
 import { type IPostsStatePost, type IPostsState, type IReactions } from '../../types/post.types'
 import { sub } from 'date-fns'
+import { createLogger } from 'vite'
 
 const POSTS_URL = 'https://jsonplaceholder.typicode.com/posts'
 
@@ -23,34 +24,18 @@ export const addNewPost = createAsyncThunk('posts/addNewPost', async (newPost: {
   return response.data
 })
 
+export const updatePost = createAsyncThunk('posts/updatePosts', async (initialPost: Omit<IPostsStatePost, 'date'>) => {
+  const { id } = initialPost
+  const response = await axios.put(`${POSTS_URL}/${id}`, initialPost)
+  console.log(response)
+  return response.data
+})
+
 const postsSlice = createSlice({
   name: 'posts',
   initialState,
   reducers: {
-    addPost: {
-      reducer(state: IPostsState, action: PayloadAction<IPostsStatePost>) {
-        state.posts.push(action.payload)
-      },
-      prepare(title: string, body: string, userId: string) {
-        return {
-          payload: {
-            id: nanoid(),
-            title,
-            body,
-            date: new Date().toISOString(),
-            userId,
-            reactions: {
-              thumbsUp: 0,
-              wow: 0,
-              heart: 0,
-              rocket: 0,
-              coffee: 0
-            }
-          }
-        }
-      }
-    },
-    reactionAdded(state: IPostsState, action: PayloadAction<{ postId: string; reaction: keyof IReactions }>) {
+    reactionAdded(state: IPostsState, action: PayloadAction<{ postId: number; reaction: keyof IReactions }>) {
       const { postId, reaction } = action.payload
       const existingPost: IPostsStatePost | undefined = state.posts.find((post) => post.id === postId)
       if (existingPost != null) {
@@ -90,6 +75,7 @@ const postsSlice = createSlice({
         state.error = action.error.message
       })
       .addCase(addNewPost.fulfilled, (state, action) => {
+        action.payload.userId = Number(action.payload.userId)
         action.payload.date = new Date().toISOString()
         action.payload.reactions = {
           thumbsUp: 0,
@@ -101,6 +87,16 @@ const postsSlice = createSlice({
         console.log(action.payload)
         state.posts.push(action.payload)
       })
+      .addCase(updatePost.fulfilled, (state, action) => {
+        if (action.payload.id === undefined) {
+          return
+        }
+        const { id } = action.payload as IPostsStatePost
+        action.payload.date = new Date().toISOString()
+        action.payload.userId = Number(action.payload.userId)
+        const posts = state.posts.filter((post) => post.id !== id)
+        state.posts = [...posts, action.payload]
+      })
   }
 })
 
@@ -108,6 +104,9 @@ export const selectAllPosts = (state: RootState) => state.posts.posts
 export const getPostsStatus = (state: RootState) => state.posts.status
 export const getPostsError = (state: RootState) => state.posts.error
 
-export const { addPost, reactionAdded, clearPosts } = postsSlice.actions
+export const selectPostById = (state: RootState, postId: number): IPostsStatePost | undefined => {
+  return state.posts.posts.find((post) => post.id === postId)
+}
+export const { reactionAdded, clearPosts } = postsSlice.actions
 
 export default postsSlice.reducer

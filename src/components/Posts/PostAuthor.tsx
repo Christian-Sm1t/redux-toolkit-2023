@@ -1,6 +1,6 @@
 import React from 'react'
-import { useAppSelector } from '../redux/hooks'
-import { selectUserById } from '../redux/slices/usersSlice'
+import { useAppSelector } from '../../redux/hooks'
+import { selectUserById } from '../../redux/slices/usersSlice'
 
 function PostAuthor(props: { userId?: string }) {
   const { userId } = props

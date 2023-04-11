@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import { useAppDispatch, useAppSelector } from '../redux/hooks'
-import { addNewPost } from '../redux/slices/postsSlice'
-import { selectAllUsers } from '../redux/slices/usersSlice'
+import { useAppDispatch, useAppSelector } from '../../redux/hooks'
+import { addNewPost } from '../../redux/slices/postsSlice'
+import { selectAllUsers } from '../../redux/slices/usersSlice'
 
 function PostAddForm() {
   const [title, setTitle] = useState<string>('')

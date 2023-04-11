@@ -1,16 +1,17 @@
 import React from 'react'
-import { useAppDispatch } from '../redux/hooks'
-import { type IPostsState, type IReactions, reactionAdded } from '../redux/slices/postsSlice'
+import { type IPostsStatePost, type IReactions } from '../../types/post.types'
+import { useAppDispatch } from '../../redux/hooks'
+import { reactionAdded } from '../../redux/slices/postsSlice'
 
 const reactionEmoji = {
   thumbsUp: '👍',
   wow: '😮',
   heart: '❤️',
   rocket: '🚀',
-  coffee: '☕',
+  coffee: '☕'
 }
 
-function PostReactions(props: { post: IPostsState & { reactions: IReactions } }) {
+function PostReactions(props: { post: IPostsStatePost & { reactions: IReactions } }) {
   const { post } = props
   const dispatch = useAppDispatch()
 

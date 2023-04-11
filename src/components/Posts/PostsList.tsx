@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
-import { useAppSelector, useAppDispatch } from '../redux/hooks'
-import { selectAllPosts, getPostsStatus, getPostsError, fetchPosts, addPost, clearPosts } from '../redux/slices/postsSlice'
 import PostExcerpt from './PostExcerpt'
+import { useAppDispatch, useAppSelector } from '../../redux/hooks'
+import { fetchPosts, getPostsError, getPostsStatus, selectAllPosts } from '../../redux/slices/postsSlice'
 
 function PostsList() {
   const dispatch = useAppDispatch()
@@ -33,12 +33,7 @@ function PostsList() {
     content = <p>{error}</p>
   }
 
-  return (
-    <section>
-      <h2>Posts</h2>
-      {content}
-    </section>
-  )
+  return <section>{content}</section>
 }
 
 export default PostsList
