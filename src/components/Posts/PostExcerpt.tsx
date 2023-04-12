@@ -1,16 +1,24 @@
-import React from 'react'
 import PostAuthor from './PostAuthor'
 import PostReactions from './PostReactions'
 import TimeAgo from './TimeAgo'
 import { type IPostsStatePost } from '../../types/post.types'
 import { Link } from 'react-router-dom'
+import { useAppSelector } from '../../redux/hooks'
+import { selectPostById } from '../../redux/slices/postsSlice'
+import { type EntityId } from '@reduxjs/toolkit'
 
 interface IProps {
-  post: IPostsStatePost
+  postId: EntityId
 }
 
-let PostExcerpt: React.FC<IProps> = (props: IProps) => {
-  const { post } = props
+function PostExcerpt(props: IProps) {
+  const { postId } = props
+
+  const post: IPostsStatePost | undefined = useAppSelector((state) => selectPostById(state, postId))
+
+  if (post === undefined) {
+    return null
+  }
 
   return (
     <article>
@@ -24,5 +32,4 @@ let PostExcerpt: React.FC<IProps> = (props: IProps) => {
   )
 }
 
-PostExcerpt = React.memo(PostExcerpt)
 export default PostExcerpt

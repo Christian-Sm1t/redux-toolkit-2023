@@ -1,3 +1,5 @@
+import { type EntityState } from '@reduxjs/toolkit'
+
 export interface IPostsStatePost {
   id: number
   title: string
@@ -15,8 +17,7 @@ export interface IReactions {
   coffee: number
 }
 
-export interface IPostsState {
-  posts: IPostsStatePost[]
+export interface IPostsState extends EntityState<IPostsStatePost> {
   status: 'idle' | 'loading' | 'succeeded' | 'failed'
   error: string | undefined | null
   count: number
