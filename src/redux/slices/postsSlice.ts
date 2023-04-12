@@ -31,7 +31,7 @@ export const updatePost = createAsyncThunk('posts/updatePosts', async (initialPo
 export const deletePost = createAsyncThunk('posts/deletePost', async (initialPost: Omit<IPostsStatePost, 'date'>) => {
   const { id } = initialPost
   const response = await axios.delete(`${POSTS_URL}/${id}`)
-  if (response?.status === 200) return initialPost
+  if (response?.status === 200) return initialPost // because of fake api
   return `${response?.status}: ${response?.statusText}`
 })
 
