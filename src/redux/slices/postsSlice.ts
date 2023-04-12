@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk, type PayloadAction, createSelector } from '@reduxjs/toolkit'
 import axios from 'axios'
 import { type RootState } from '../store'
 import { type IPostsStatePost, type IPostsState, type IReactions } from '../../types/post.types'
@@ -9,11 +9,12 @@ const POSTS_URL = 'https://jsonplaceholder.typicode.com/posts'
 const initialState: IPostsState = {
   posts: [],
   status: 'idle',
-  error: null
+  error: null,
+  count: 0
 }
 
-export const fetchPosts = createAsyncThunk('posts/fetchPosts', async (controller: AbortController) => {
-  const response = await axios.get(POSTS_URL, { signal: controller.signal })
+export const fetchPosts = createAsyncThunk('posts/fetchPosts', async () => {
+  const response = await axios.get(POSTS_URL)
   return response.data
 })
 
@@ -45,6 +46,10 @@ const postsSlice = createSlice({
       if (existingPost != null) {
         existingPost.reactions[reaction]++
       }
+    },
+    increaseCount(state: IPostsState) {
+      console.log(state.count)
+      state.count++
     },
     clearPosts(state: IPostsState) {
       state.posts = []
@@ -118,9 +123,12 @@ const postsSlice = createSlice({
 export const selectAllPosts = (state: RootState) => state.posts.posts
 export const getPostsStatus = (state: RootState) => state.posts.status
 export const getPostsError = (state: RootState) => state.posts.error
+export const getPostCount = (state: RootState) => state.posts.count
 
 export const selectPostById = (state: RootState, postId: number): IPostsStatePost | undefined => state.posts.posts.find((post) => post.id === postId)
 
-export const { reactionAdded, clearPosts } = postsSlice.actions
+export const selectPostsByUserId = createSelector([selectAllPosts, (state, userId) => userId], (posts, userId) => posts.filter((post) => post.userId === userId))
+
+export const { increaseCount, reactionAdded, clearPosts } = postsSlice.actions
 
 export default postsSlice.reducer

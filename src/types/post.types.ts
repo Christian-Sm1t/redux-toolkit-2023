@@ -19,4 +19,5 @@ export interface IPostsState {
   posts: IPostsStatePost[]
   status: 'idle' | 'loading' | 'succeeded' | 'failed'
   error: string | undefined | null
+  count: number
 }

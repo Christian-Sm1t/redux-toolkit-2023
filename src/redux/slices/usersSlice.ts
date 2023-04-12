@@ -20,12 +20,12 @@ const userSlice = createSlice({
     builder.addCase(fetchUsers.fulfilled, (state, action) => {
       return action.payload
     })
-  },
+  }
 })
 
 export const selectAllUsers = (state: RootState) => state.users
 
-export const selectUserById = (state: RootState, userId?: string) => {
+export const selectUserById = (state: RootState, userId?: number) => {
   return state.users.find((user) => user.id === userId)
 }
 

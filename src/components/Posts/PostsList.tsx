@@ -1,25 +1,11 @@
-import { useEffect } from 'react'
 import PostExcerpt from './PostExcerpt'
-import { useAppDispatch, useAppSelector } from '../../redux/hooks'
-import { fetchPosts, getPostsError, getPostsStatus, selectAllPosts } from '../../redux/slices/postsSlice'
+import { useAppSelector } from '../../redux/hooks'
+import { getPostsError, getPostsStatus, selectAllPosts } from '../../redux/slices/postsSlice'
 
 function PostsList() {
-  const dispatch = useAppDispatch()
-
   const posts = useAppSelector(selectAllPosts)
   const postsStatus = useAppSelector(getPostsStatus)
   const error = useAppSelector(getPostsError)
-
-  useEffect(() => {
-    const controller = new AbortController()
-    if (postsStatus === 'idle') {
-      void dispatch(fetchPosts(controller))
-    }
-    return () => {
-      controller.abort()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   let content
   if (postsStatus === 'loading') {
