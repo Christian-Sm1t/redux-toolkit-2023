@@ -9,7 +9,7 @@ interface IProps {
   post: IPostsStatePost
 }
 
-function PostExcerpt(props: IProps) {
+let PostExcerpt: React.FC<IProps> = (props: IProps) => {
   const { post } = props
 
   return (
@@ -24,4 +24,5 @@ function PostExcerpt(props: IProps) {
   )
 }
 
+PostExcerpt = React.memo(PostExcerpt)
 export default PostExcerpt
