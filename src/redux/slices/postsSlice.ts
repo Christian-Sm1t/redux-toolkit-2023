@@ -3,7 +3,6 @@ import axios from 'axios'
 import { type RootState } from '../store'
 import { type IPostsStatePost, type IPostsState, type IReactions } from '../../types/post.types'
 import { sub } from 'date-fns'
-import { createLogger } from 'vite'
 
 const POSTS_URL = 'https://jsonplaceholder.typicode.com/posts'
 
@@ -15,7 +14,6 @@ const initialState: IPostsState = {
 
 export const fetchPosts = createAsyncThunk('posts/fetchPosts', async (controller: AbortController) => {
   const response = await axios.get(POSTS_URL, { signal: controller.signal })
-  console.log(response)
   return response.data
 })
 
@@ -27,8 +25,14 @@ export const addNewPost = createAsyncThunk('posts/addNewPost', async (newPost: {
 export const updatePost = createAsyncThunk('posts/updatePosts', async (initialPost: Omit<IPostsStatePost, 'date'>) => {
   const { id } = initialPost
   const response = await axios.put(`${POSTS_URL}/${id}`, initialPost)
-  console.log(response)
   return response.data
+})
+
+export const deletePost = createAsyncThunk('posts/deletePost', async (initialPost: Omit<IPostsStatePost, 'date'>) => {
+  const { id } = initialPost
+  const response = await axios.delete(`${POSTS_URL}/${id}`)
+  if (response?.status === 200) return initialPost
+  return `${response?.status}: ${response?.statusText}`
 })
 
 const postsSlice = createSlice({
@@ -97,6 +101,17 @@ const postsSlice = createSlice({
         const posts = state.posts.filter((post) => post.id !== id)
         state.posts = [...posts, action.payload]
       })
+      .addCase(deletePost.fulfilled, (state, action) => {
+        if (typeof action.payload === 'string') {
+          return
+        }
+        if (action.payload.id === undefined) {
+          return
+        }
+        const { id } = action.payload as IPostsStatePost
+        const posts = state.posts.filter((post) => post.id !== id)
+        state.posts = posts
+      })
   }
 })
 
@@ -104,9 +119,8 @@ export const selectAllPosts = (state: RootState) => state.posts.posts
 export const getPostsStatus = (state: RootState) => state.posts.status
 export const getPostsError = (state: RootState) => state.posts.error
 
-export const selectPostById = (state: RootState, postId: number): IPostsStatePost | undefined => {
-  return state.posts.posts.find((post) => post.id === postId)
-}
+export const selectPostById = (state: RootState, postId: number): IPostsStatePost | undefined => state.posts.posts.find((post) => post.id === postId)
+
 export const { reactionAdded, clearPosts } = postsSlice.actions
 
 export default postsSlice.reducer

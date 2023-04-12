@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../../redux/hooks'
 import { addNewPost } from '../../redux/slices/postsSlice'
 import { selectAllUsers } from '../../redux/slices/usersSlice'
+import { useNavigate } from 'react-router-dom'
 
 function PostAddForm() {
   const [title, setTitle] = useState<string>('')
@@ -11,6 +12,8 @@ function PostAddForm() {
 
   const dispatch = useAppDispatch()
   const users = useAppSelector(selectAllUsers)
+
+  const navigate = useNavigate()
 
   const onTitleChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value)
@@ -33,6 +36,7 @@ function PostAddForm() {
         setTitle('')
         setBody('')
         setUserId('')
+        navigate(`/`)
       } catch (err) {
         console.error(err)
       } finally {

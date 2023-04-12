@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../redux/hooks'
-import { selectPostById, updatePost } from '../../redux/slices/postsSlice'
+import { deletePost, selectPostById, updatePost } from '../../redux/slices/postsSlice'
 import { selectAllUsers } from '../../redux/slices/usersSlice'
 
 function PostEditForm() {
@@ -59,6 +59,22 @@ function PostEditForm() {
     }
   }
 
+  const onDeletePostClicked = () => {
+    try {
+      setEditRequestStatus('pending')
+      void dispatch(deletePost({ id: post.id, title, body, userId, reactions: post.reactions })).unwrap()
+
+      setTitle('')
+      setBody('')
+      setUserId('')
+      navigate(`/`)
+    } catch (err) {
+      console.error('Failed to save the post', err)
+    } finally {
+      setEditRequestStatus('idle')
+    }
+  }
+
   const userOptions = users.map((user) => (
     <option key={user.id} value={user.id}>
       {user.name}
@@ -80,6 +96,9 @@ function PostEditForm() {
         <textarea id="postContent" name="postContent" value={body} onChange={onContentChanged} />
         <button type="button" onClick={onSavePostClicked} disabled={!canSave}>
           Save Post
+        </button>
+        <button type="button" onClick={onDeletePostClicked}>
+          delete Post
         </button>
       </form>
     </section>
